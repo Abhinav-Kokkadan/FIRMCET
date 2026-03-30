@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FIRMCET — Financial Intelligence & Risk Management Club</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── VARIABLES ─── */
+    :root {
+      --bg:       #0d0d0d;
+      --surface:  #141414;
+      --border:   #2a2a2a;
+      --gold:     #c9a84c;
+      --gold-dim: #7a6330;
+      --text:     #e8e0d0;
+      --muted:    #6b6560;
+      --white:    #f5f0e8;
+      --ink:      #3a7bd5;
+      --nav-h:    64px;
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.7; overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    img { display: block; max-width: 100%; }
+
+    /* ─── NOISE ─── */
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035; pointer-events: none; z-index: 9999;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; border-bottom: 1px solid var(--border);
+      background: rgba(13,13,13,0.85); backdrop-filter: blur(12px); z-index: 100;
+    }
+    .nav-logo { font-family: 'DM Mono', monospace; font-size: 0.8rem; letter-spacing: 0.2em; color: var(--gold); }
+    .nav-links { display: flex; gap: 36px; }
+    .nav-links a { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); transition: color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color: var(--white); }
+    .nav-toggle { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .nav-toggle span { width: 22px; height: 1.5px; background: var(--muted); transition: 0.3s; }
+
+    /* ─── LAYOUT ─── */
+    section { padding: 120px 0; }
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px; }
+    .section-divider { width: 48px; height: 1px; background: var(--gold-dim); margin: 64px auto; }
+
+    /* ─── HERO ─── */
+    #about { padding-top: calc(var(--nav-h) + 80px); padding-bottom: 80px; position: relative; overflow: hidden; }
+
+    /* paint splash */
+    .hero-splash {
+      position: absolute; top: -40px; right: -80px;
+      width: 520px; height: 520px;
+      pointer-events: none; z-index: 0;
+      opacity: 0;
+      animation: splashIn 1.6s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+    }
+    @keyframes splashIn {
+      from { opacity: 0; transform: scale(0.6) rotate(-15deg); }
+      to   { opacity: 1; transform: scale(1) rotate(0deg); }
+    }
+
+    .hero-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.75rem; letter-spacing: 0.25em;
+      color: var(--gold); text-transform: uppercase; margin-bottom: 40px;
+      position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.8s 0.1s ease forwards;
+    }
+    .hero-flex {
+      display: flex; align-items: flex-start; gap: 36px; margin-bottom: 40px;
+      position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.8s 0.25s ease forwards;
+    }
+    .hero-logo-placeholder {
+      width: 80px; height: 80px; border-radius: 50%;
+      border: 1px solid var(--gold-dim); background: var(--surface);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .hero-logo-placeholder span { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--gold); letter-spacing: 0.1em; text-align: center; }
+    .hero-heading { flex: 1; }
+    .hero-pre { font-size: 1rem; font-weight: 300; color: var(--muted); margin-bottom: 4px; }
+    .hero-h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 6vw, 4rem); font-weight: 900; line-height: 1.05; color: var(--white); }
+    .hero-h1 em { color: var(--gold); font-style: italic; }
+    .typed-cursor {
+      display: inline-block; width: 3px; height: 1em;
+      background: var(--gold); vertical-align: middle; margin-left: 3px;
+      animation: blink 1s step-end infinite;
+    }
+    .hero-body {
+      font-size: 0.95rem; color: #9e9790; line-height: 1.9; max-width: 640px;
+      border-left: 2px solid var(--gold-dim); padding-left: 24px;
+      position: relative; z-index: 1;
+      opacity: 0; animation: fadeUp 0.8s 0.4s ease forwards;
+    }
+
+    /* ─── SECTION TITLE ─── */
+    .sec-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 900; line-height: 1.1; color: var(--white); margin-bottom: 56px; }
+    .sec-title em { color: var(--gold); font-style: italic; }
+
+    /* ─── EVENTS ─── */
+    #experiences { background: var(--surface); }
+    .event-list { display: flex; flex-direction: column; }
+    .event-item { display: grid; grid-template-columns: 120px 1fr; gap: 0 32px; padding: 28px 0; border-bottom: 1px solid var(--border); }
+    .event-item:first-child { border-top: 1px solid var(--border); }
+    .event-date { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--gold); letter-spacing: 0.1em; padding-top: 3px; }
+    .event-info { display: flex; flex-direction: column; gap: 4px; }
+    .event-name { font-size: 1rem; font-weight: 500; color: var(--white); }
+    .event-desc { font-size: 0.85rem; color: var(--muted); }
+
+    /* ─── WORKSHOPS TEASER ─── */
+    .ws-teaser {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 24px; padding: 32px 36px; border: 1px solid var(--border);
+      transition: border-color 0.25s, background 0.25s;
+    }
+    .ws-teaser:hover { border-color: var(--gold-dim); background: var(--surface); }
+    .ws-teaser-tag { font-family: 'DM Mono', monospace; font-size: 0.65rem; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+    .ws-teaser-title { font-size: 1.05rem; font-weight: 500; color: var(--white); margin-bottom: 8px; }
+    .ws-teaser-desc  { font-size: 0.83rem; color: var(--muted); max-width: 520px; line-height: 1.6; }
+    .ws-teaser-right { display: flex; flex-direction: column; align-items: flex-end; gap: 12px; flex-shrink: 0; }
+    .ws-teaser-count { font-family: 'Playfair Display', serif; font-size: 2.5rem; color: var(--border); font-weight: 900; line-height: 1; }
+    .ws-teaser-arrow { font-size: 1.2rem; color: var(--gold); transition: transform 0.2s; }
+    .ws-teaser:hover .ws-teaser-arrow { transform: translateX(6px); }
+
+    /* ─── PlaCET ─── */
+    .placet-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .placet-card { border: 1px solid var(--border); padding: 28px 24px; position: relative; overflow: hidden; transition: border-color 0.25s; }
+    .placet-card:hover { border-color: var(--gold-dim); }
+    .placet-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); }
+    .placet-card.ink-accent::before { background: linear-gradient(90deg, var(--ink), transparent); }
+    .placet-tag { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+    .placet-card.ink-accent .placet-tag { color: var(--ink); }
+    .placet-title { font-size: 0.95rem; font-weight: 500; color: var(--white); margin-bottom: 8px; }
+    .placet-desc  { font-size: 0.82rem; color: var(--muted); line-height: 1.65; }
+
+    /* ─── SKILLS ─── */
+    #skills { background: var(--surface); }
+    .skills-block { margin-bottom: 36px; }
+    .skills-block:last-child { margin-bottom: 0; }
+    .skill-cat { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; margin-bottom: 14px; }
+    .skill-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+    .pill { font-size: 0.8rem; padding: 6px 16px; border: 1px solid var(--border); color: var(--muted); letter-spacing: 0.05em; transition: border-color 0.2s, color 0.2s; }
+    .pill:hover { border-color: var(--gold-dim); color: var(--white); }
+    .pill.ink { border-color: rgba(58,123,213,0.3); color: rgba(58,123,213,0.7); }
+    .pill.ink:hover { border-color: var(--ink); color: var(--ink); }
+
+    /* ─── QUOTE ─── */
+    .quote-banner { text-align: center; padding: 100px 40px; background: var(--bg); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .quote-banner blockquote { font-family: 'Playfair Display', serif; font-size: clamp(1.4rem, 3.5vw, 2.2rem); font-style: italic; color: var(--white); max-width: 640px; margin: 0 auto 20px; line-height: 1.4; }
+    .quote-banner cite { font-family: 'DM Mono', monospace; font-size: 0.72rem; color: var(--gold); letter-spacing: 0.2em; text-transform: uppercase; font-style: normal; }
+
+    /* ─── FOOTER ─── */
+    footer { padding: 48px 0; border-top: 1px solid var(--border); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; }
+    .footer-brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--white); }
+    .footer-brand span { display: block; font-family: 'DM Sans', sans-serif; font-size: 0.75rem; color: var(--muted); font-weight: 300; margin-top: 4px; }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ─── ANIMATIONS ─── */
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+    @keyframes blink  { 0%,100% { opacity:1; } 50% { opacity:0; } }
+    .reveal { opacity:0; transform:translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity:1; transform:none; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 640px) {
+      nav { padding: 0 24px; }
+      .nav-links { display:none; flex-direction:column; position:absolute; top:var(--nav-h); left:0; right:0; background:var(--bg); border-bottom:1px solid var(--border); padding:24px; gap:20px; }
+      .nav-links.open { display:flex; }
+      .nav-toggle { display:flex; }
+      .container { padding: 0 24px; }
+      .hero-flex { flex-direction:column; gap:24px; }
+      .hero-splash { width:260px; height:260px; right:-30px; top:20px; }
+      .placet-grid { grid-template-columns:1fr; }
+      .event-item { grid-template-columns:1fr; gap:6px; }
+      .ws-teaser { flex-direction:column; align-items:flex-start; }
+      .footer-inner { flex-direction:column; align-items:flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav id="main-nav">
+    <div class="nav-logo">FIRMCET / CET</div>
+    <div class="nav-toggle" id="nav-toggle"><span></span><span></span><span></span></div>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#about" class="active">About</a></li>
+      <li><a href="#experiences">Events</a></li>
+      <li><a href="#workshops">Workshops</a></li>
+      <li><a href="#placet">PlaCET</a></li>
+      <li><a href="#skills">Focus Areas</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="about">
+
+    <!-- gold + ink paint splash -->
+    <svg class="hero-splash" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <filter id="fg" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="22"/></filter>
+        <filter id="fi" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="16"/></filter>
+      </defs>
+      <!-- gold glow blobs -->
+      <ellipse cx="300" cy="170" rx="160" ry="130" fill="#c9a84c" opacity="0.07" filter="url(#fg)"/>
+      <ellipse cx="380" cy="260" rx="90"  ry="70"  fill="#c9a84c" opacity="0.05" filter="url(#fg)"/>
+      <!-- gold drips -->
+      <path d="M340,100 Q360,160 328,240 Q315,275 342,308" stroke="#c9a84c" stroke-width="2" fill="none" opacity="0.2" stroke-linecap="round"/>
+      <path d="M290,130 Q270,175 295,205" stroke="#c9a84c" stroke-width="1.5" fill="none" opacity="0.15" stroke-linecap="round"/>
+      <!-- gold drops -->
+      <circle cx="365" cy="318" r="5.5" fill="#c9a84c" opacity="0.25"/>
+      <circle cx="285" cy="95"  r="3"   fill="#c9a84c" opacity="0.32"/>
+      <circle cx="428" cy="195" r="4"   fill="#c9a84c" opacity="0.2"/>
+      <circle cx="250" cy="265" r="2.5" fill="#c9a84c" opacity="0.22"/>
+      <circle cx="410" cy="135" r="2"   fill="#c9a84c" opacity="0.18"/>
+      <!-- ink-blue blob -->
+      <ellipse cx="400" cy="360" rx="85" ry="65" fill="#3a7bd5" opacity="0.065" filter="url(#fi)"/>
+      <!-- ink drip -->
+      <path d="M405,290 Q422,335 400,385 Q390,408 412,432" stroke="#3a7bd5" stroke-width="1.8" fill="none" opacity="0.16" stroke-linecap="round"/>
+      <!-- ink drops -->
+      <circle cx="435" cy="390" r="4.5" fill="#3a7bd5" opacity="0.22"/>
+      <circle cx="362" cy="432" r="2.5" fill="#3a7bd5" opacity="0.2"/>
+      <circle cx="455" cy="305" r="3"   fill="#3a7bd5" opacity="0.16"/>
+      <!-- micro specks -->
+      <circle cx="195" cy="145" r="1.5" fill="#c9a84c" opacity="0.28"/>
+      <circle cx="465" cy="248" r="1.5" fill="#3a7bd5" opacity="0.22"/>
+      <circle cx="478" cy="355" r="2"   fill="#c9a84c" opacity="0.17"/>
+      <circle cx="245" cy="358" r="1.5" fill="#3a7bd5" opacity="0.17"/>
+      <circle cx="318" cy="380" r="1.5" fill="#c9a84c" opacity="0.15"/>
+    </svg>
+
+    <div class="container">
+      <p class="hero-tag">Est. 2025 &nbsp;·&nbsp; College of Engineering Trivandrum</p>
+
+      <div class="hero-flex">
+        <div class="hero-logo-placeholder" aria-hidden="true">
+          <span>FIRM<br>CET</span>
+        </div>
+        <div class="hero-heading">
+          <p class="hero-pre">We are</p>
+          <h1 class="hero-h1">
+            <em id="typed-word">FIRMCET</em><span class="typed-cursor"></span>
+          </h1>
+        </div>
+      </div>
+
+      <p class="hero-body">
+        The Financial Intelligence and Risk Management Club at CET ignites financial acumen in engineering minds — turning complex market concepts into clear, actionable insights. Through workshops, quizzes, simulations, and PlaCET, we empower students to master budgeting, investing, and risk navigation with precision. Join us to cultivate the quiet confidence to shape a secure, innovative future — one informed decision at a time.
+        <br><br>
+        <a href="mailto:firmcet@cet.ac.in" style="color:var(--gold)">firmcet@cet.ac.in</a>
+      </p>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- EVENTS -->
+  <section id="experiences">
+    <div class="container">
+      <h2 class="sec-title reveal">Our<br><em>Events</em></h2>
+      <ul class="event-list">
+        <li class="event-item reveal">
+          <span class="event-date">2025</span>
+          <div class="event-info">
+            <span class="event-name">FP&amp;A &amp; Financial Modelling Workshop</span>
+            <span class="event-desc">Overview of financial careers, modelling fundamentals, 3-statement &amp; DCF models, company valuation, and FP&amp;A at FIRMCET.</span>
+          </div>
+        </li>
+        <!-- Add real events here as they happen -->
+      </ul>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- WORKSHOPS TEASER -->
+  <section id="workshops">
+    <div class="container">
+      <h2 class="sec-title reveal">Work<em>shops</em></h2>
+      <a href="workshops.html" class="ws-teaser reveal">
+        <div class="ws-teaser-left">
+          <p class="ws-teaser-tag">Series · Ongoing</p>
+          <p class="ws-teaser-title">FP&amp;A &amp; Financial Modelling</p>
+          <p class="ws-teaser-desc">Financial careers, 3-statement models, DCF, company valuation and more — across a growing series of hands-on sessions.</p>
+        </div>
+        <div class="ws-teaser-right">
+          <span class="ws-teaser-count">01</span>
+          <span class="ws-teaser-arrow">→</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- PlaCET -->
+  <section id="placet">
+    <div class="container">
+      <h2 class="sec-title reveal">Pla<em>CET</em></h2>
+      <div class="placet-grid">
+        <div class="placet-card reveal">
+          <p class="placet-tag">Placement Support</p>
+          <p class="placet-title">Finance Career Prep</p>
+          <p class="placet-desc">Resume reviews, mock interviews, and mentoring focused on roles in investment banking, FP&amp;A, fintech, and consulting.</p>
+        </div>
+        <div class="placet-card ink-accent reveal">
+          <p class="placet-tag">Industry Connect</p>
+          <p class="placet-title">Alumni Network</p>
+          <p class="placet-desc">Access to CET alumni in finance — connecting current students with professionals across the industry.</p>
+        </div>
+        <div class="placet-card reveal">
+          <p class="placet-tag">Live Projects</p>
+          <p class="placet-title">Real-World Case Studies</p>
+          <p class="placet-desc">Valuation models, risk assessments, and financial planning briefs drawn from real industry scenarios.</p>
+        </div>
+        <div class="placet-card reveal">
+          <p class="placet-tag">Certification</p>
+          <p class="placet-title">CFA &amp; NISM Prep</p>
+          <p class="placet-desc">Structured study groups and resources to help members crack CFA Level 1 and NISM certifications alongside B.Tech.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- FOCUS AREAS -->
+  <section id="skills">
+    <div class="container">
+      <h2 class="sec-title reveal">Focus<br><em>Areas</em></h2>
+
+      <div class="skills-block reveal">
+        <p class="skill-cat">Financial Markets</p>
+        <div class="skill-pills">
+          <span class="pill">Equity Research</span>
+          <span class="pill">Derivatives</span>
+          <span class="pill ink">FP&amp;A</span>
+          <span class="pill">Mutual Funds</span>
+          <span class="pill">Commodities</span>
+        </div>
+      </div>
+
+      <div class="skills-block reveal">
+        <p class="skill-cat">Modelling &amp; Valuation</p>
+        <div class="skill-pills">
+          <span class="pill">3-Statement Model</span>
+          <span class="pill ink">DCF Valuation</span>
+          <span class="pill">Company Valuation</span>
+          <span class="pill">Financial Modelling</span>
+        </div>
+      </div>
+
+      <div class="skills-block reveal">
+        <p class="skill-cat">Tools</p>
+        <div class="skill-pills">
+          <span class="pill">Excel &amp; VBA</span>
+          <span class="pill">Python</span>
+          <span class="pill ink">Power BI</span>
+          <span class="pill">SQL</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUOTE -->
+  <div class="quote-banner">
+    <blockquote>"Finance is not merely about making money. It's about achieving our deep goals and protecting the fruits of our labour."</blockquote>
+    <cite>— Robert J. Shiller</cite>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          FIRMCET
+          <span>Financial Intelligence &amp; Risk Management Club · CET, Trivandrum</span>
+        </div>
+        <div class="footer-links">
+          <a href="mailto:firmcet@cet.ac.in">Email</a>
+          <a href="#">Instagram</a>
+          <a href="#">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function initTyped() {
+      const el = document.getElementById('typed-word');
+      const words = ['FIRMCET', 'Finance', 'Your Future', 'The Market'];
+      let wi = 0, ci = 0, del = false;
+      function tick() {
+        const w = words[wi];
+        el.textContent = del ? w.slice(0, ci--) : w.slice(0, ci++);
+        let d = del ? 60 : 90;
+        if (!del && ci > w.length) { d = 1400; del = true; }
+        if (del && ci < 0) { d = 300; del = false; wi = (wi + 1) % words.length; ci = 0; }
+        setTimeout(tick, d);
+      }
+      tick();
+    }
+
+    function initReveal() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    }
+
+    function initActiveNav() {
+      const sections = document.querySelectorAll('section[id]');
+      const links = document.querySelectorAll('.nav-links a');
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => {
+          if (e.isIntersecting)
+            links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        });
+      }, { rootMargin: '-40% 0px -55% 0px' });
+      sections.forEach(s => obs.observe(s));
+    }
+
+    function initHamburger() {
+      const t = document.getElementById('nav-toggle');
+      const l = document.getElementById('nav-links');
+      t.addEventListener('click', () => l.classList.toggle('open'));
+      l.querySelectorAll('a').forEach(a => a.addEventListener('click', () => l.classList.remove('open')));
+    }
+
+    function initNavScroll() {
+      const nav = document.getElementById('main-nav');
+      window.addEventListener('scroll', () => {
+        nav.style.borderBottomColor = window.scrollY > 10 ? 'var(--border)' : 'transparent';
+      }, { passive: true });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTyped(); initReveal(); initActiveNav(); initHamburger(); initNavScroll();
+    });
+  </script>
+</body>
+</html>

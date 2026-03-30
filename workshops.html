@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Workshops — FIRMCET</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:       #0d0d0d;
+      --surface:  #141414;
+      --border:   #2a2a2a;
+      --gold:     #c9a84c;
+      --gold-dim: #7a6330;
+      --text:     #e8e0d0;
+      --muted:    #6b6560;
+      --white:    #f5f0e8;
+      --nav-h:    64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-weight: 300;
+      line-height: 1.7; overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+
+    /* noise */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035; pointer-events: none; z-index: 9999;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(13,13,13,0.88);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    .nav-logo {
+      font-family: 'DM Mono', monospace; font-size: 0.8rem;
+      letter-spacing: 0.2em; color: var(--gold);
+    }
+    .nav-back {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); transition: color 0.2s;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-back:hover { color: var(--white); }
+    .nav-back::before { content: '←'; }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px; }
+
+    /* ── PAGE HEADER ── */
+    .page-header {
+      padding: calc(var(--nav-h) + 80px) 0 64px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 80px;
+    }
+    .page-header-tag {
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.25em; color: var(--gold);
+      text-transform: uppercase; margin-bottom: 20px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s ease forwards;
+    }
+    .page-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 900; line-height: 1.0; color: var(--white);
+      opacity: 0; animation: fadeUp 0.7s 0.2s ease forwards;
+    }
+    .page-header h1 em { color: var(--gold); font-style: italic; }
+    .page-header-sub {
+      margin-top: 20px; font-size: 0.9rem; color: var(--muted);
+      max-width: 520px; line-height: 1.8;
+      opacity: 0; animation: fadeUp 0.7s 0.35s ease forwards;
+    }
+
+    /* ── WORKSHOP CARD ── */
+    .ws-list { display: flex; flex-direction: column; gap: 56px; padding-bottom: 120px; }
+
+    .ws-card { border: 1px solid var(--border); }
+
+    /* card top bar */
+    .ws-card-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 16px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .ws-num {
+      font-family: 'DM Mono', monospace; font-size: 0.65rem;
+      color: var(--gold); letter-spacing: 0.2em;
+    }
+    .ws-badge {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 4px 10px; border: 1px solid var(--gold-dim); color: var(--gold);
+    }
+    .ws-badge.upcoming { border-color: var(--border); color: var(--muted); }
+
+    /* card title block */
+    .ws-card-title {
+      padding: 28px 28px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ws-card-title h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 700; color: var(--white);
+      margin-bottom: 6px;
+    }
+    .ws-card-title p { font-size: 0.83rem; color: var(--muted); }
+
+    /* agenda */
+    .ws-agenda { padding: 8px 0; }
+    .ws-row {
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      gap: 0 20px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .ws-row:last-child { border-bottom: none; }
+    .ws-row:hover { background: rgba(201,168,76,0.03); }
+
+    .ws-step {
+      font-family: 'DM Mono', monospace; font-size: 0.62rem;
+      color: var(--gold-dim); letter-spacing: 0.1em; padding-top: 3px;
+    }
+    .ws-item-title { font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+    .ws-item-desc  { font-size: 0.8rem; color: var(--muted); line-height: 1.55; }
+
+    /* coming soon card */
+    .ws-soon {
+      border: 1px dashed var(--border); padding: 40px 28px;
+      display: flex; align-items: center; gap: 20px; opacity: 0.4;
+    }
+    .ws-soon-num {
+      font-family: 'Playfair Display', serif; font-size: 3rem;
+      font-weight: 900; color: var(--border); line-height: 1;
+    }
+    .ws-soon-text p:first-child { font-size: 0.9rem; font-weight: 500; color: var(--white); margin-bottom: 4px; }
+    .ws-soon-text p:last-child  { font-size: 0.8rem; color: var(--muted); }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border); padding: 40px 0;
+    }
+    .footer-inner {
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 16px;
+    }
+    .footer-brand {
+      font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--white);
+    }
+    .footer-brand span {
+      display: block; font-family: 'DM Sans', sans-serif;
+      font-size: 0.72rem; color: var(--muted); font-weight: 300;
+      margin-top: 3px;
+    }
+    .footer-back {
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); transition: color 0.2s;
+    }
+    .footer-back:hover { color: var(--gold); }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 24px; }
+      .container { padding: 0 24px; }
+      .ws-row { grid-template-columns: 24px 1fr; padding: 14px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-logo">FIRMCET / Workshops</div>
+    <a href="index.html" class="nav-back">Back to Home</a>
+  </nav>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="container">
+      <p class="page-header-tag">Workshop Series · FP&amp;A &amp; Finance</p>
+      <h1>Work<em>shops</em></h1>
+      <p class="page-header-sub">
+        A growing series of hands-on sessions covering financial modelling, valuation, careers, and the tools used by finance professionals — built for engineering students at CET.
+      </p>
+    </div>
+  </div>
+
+  <!-- WORKSHOP LIST -->
+  <div class="container">
+    <div class="ws-list">
+
+      <!-- ── WS 01 ── -->
+      <div class="ws-card reveal">
+        <div class="ws-card-bar">
+          <span class="ws-num">WS — 01</span>
+          <span class="ws-badge">Completed</span>
+        </div>
+        <div class="ws-card-title">
+          <h2>FP&amp;A &amp; Financial Modelling Fundamentals</h2>
+          <p>End-to-end walkthrough of financial planning, analysis, and valuation — from careers to DCF models</p>
+        </div>
+        <ul class="ws-agenda">
+          <li class="ws-row">
+            <span class="ws-step">01</span>
+            <div>
+              <p class="ws-item-title">Overview of the Financial &amp; Economic World</p>
+              <p class="ws-item-desc">Macro context, global market structure, key institutions, and how capital moves through the economy</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">02</span>
+            <div>
+              <p class="ws-item-title">Financial Careers</p>
+              <p class="ws-item-desc">Pathways in investment banking, FP&amp;A, equity research, consulting, and fintech — roles, skills, and how to break in</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">03</span>
+            <div>
+              <p class="ws-item-title">FP&amp;A Focused Club</p>
+              <p class="ws-item-desc">What FIRMCET's FP&amp;A vertical does, ongoing projects, and how members can contribute</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">04</span>
+            <div>
+              <p class="ws-item-title">Financial Modelling</p>
+              <p class="ws-item-desc">Model structure, Excel best practices, assumptions, and common pitfalls — building clean, auditable models</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">05</span>
+            <div>
+              <p class="ws-item-title">3-Statement Model &amp; DCF Model</p>
+              <p class="ws-item-desc">Linking income statement, balance sheet, and cash flow; then projecting free cash flows and discounting to present value</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">06</span>
+            <div>
+              <p class="ws-item-title">Company / Asset Valuation</p>
+              <p class="ws-item-desc">Comparable companies analysis, precedent transactions, and intrinsic value — how analysts price businesses and assets</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">07</span>
+            <div>
+              <p class="ws-item-title">FP&amp;A at FIRMCET — Overview &amp; Functioning</p>
+              <p class="ws-item-desc">How the FP&amp;A vertical operates within FIRMCET, real club projects, and what members work on week to week</p>
+            </div>
+          </li>
+          <li class="ws-row">
+            <span class="ws-step">08</span>
+            <div>
+              <p class="ws-item-title">Discussion &amp; Feedback</p>
+              <p class="ws-item-desc">Open Q&amp;A, member reflections, and next steps for the series</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ── WS 02 placeholder ── -->
+      <div class="ws-soon reveal">
+        <span class="ws-soon-num">02</span>
+        <div class="ws-soon-text">
+          <p>Next Workshop — Coming Soon</p>
+          <p>Stay tuned for the next session in the series. Follow us on Instagram or email firmcet@cet.ac.in</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          FIRMCET
+          <span>Financial Intelligence &amp; Risk Management Club · CET, Trivandrum</span>
+        </div>
+        <a href="index.html" class="footer-back">← Home</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    function initReveal() {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    }
+    document.addEventListener('DOMContentLoaded', initReveal);
+  </script>
+</body>
+</html>
